@@ -1,4 +1,5 @@
-import threading
+from multiprocessing import Process
+
 from time import sleep
 from flask import Flask, jsonify
 import logging
@@ -12,16 +13,16 @@ app.config['DEBUG'] = True
 # curl http://localhost:5000/main
 
 @app.route('/main')
-def main():
-    t1 = threading.Thread(target=mock_answer, args=(5,))
-
-    t1.start()
-    # t1.join()
-    
+def index():
+    process = Process(target=mock_answer, args=(3,), daemon=True)
+    process.start()
     return jsonify({'status_code': 200, 'message': 'Your request received and in proccess..'})
+
 
 def mock_answer(time=5):
     sleep(time)
     app.logger.debug(f"Finished your process in {time} seconds!")
+    return 'ok'
+
 
 app.run()
